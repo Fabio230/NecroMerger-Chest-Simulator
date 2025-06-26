@@ -6,6 +6,7 @@ const chestContainer = document.getElementById('chestTypeButtons');
 const openCountContainer = document.getElementById('openCountButtons');
 const openChestBtn = document.getElementById('openChestBtn');
 const resultDiv = document.getElementById('result');
+const chestAmountInput = document.getElementById('chestAmount');
 
 function clearErrors() {
     chestContainer.classList.remove('error');
@@ -18,7 +19,7 @@ function markError(element) {
 
 rarities.forEach(rarity => {
     const btn = document.createElement('button');
-    btn.innerHTML = `<img src="chests/${rarity}.jpg" alt="${rarity}">`;
+    btn.innerHTML = `<img src="chests/${rarity}.png" alt="${rarity}">`;
     btn.onclick = () => {
     selectedChest = rarity;
     [...chestContainer.children].forEach(b => b.classList.remove('selected'));
@@ -48,8 +49,7 @@ function simulateChest() {
         markError(chestContainer);
         hasError = true;
     }
-    console.log(extraCount);
-    if (extraCount < 0 && extraCount > 4) {
+    if (extraCount < 0 || extraCount > 4) {
         markError(openCountContainer);
         hasError = true;
     }
@@ -60,11 +60,15 @@ function simulateChest() {
     }
 
     const chestType = selectedChest;
-    const openCount = 4 + extraCount;
-    const pileCounts = {};
+
+    let chestAmount = parseInt(chestAmountInput.value);
+    if (isNaN(chestAmount) || chestAmount < 1) chestAmount = 1;
+
+    const openCount = (4 + extraCount) * chestAmount;
+        const pileCounts = {};
+
     const chestIndex = rarities.indexOf(chestType);
-    const dropRarities =
-    chestType === 'death' || chestType === 'cosmic'
+    const dropRarities = (chestType === 'death' || chestType === 'cosmic')
         ? [chestType]
         : [chestType, rarities[chestIndex + 1]];
 
@@ -72,62 +76,54 @@ function simulateChest() {
         pileCounts[rarity] = { lv1: 0, lv2: 0 };
     }
 
-    for (let i = 0; i < openCount; i++) {
-        const roll = Math.random();
-        let targetRarity = chestType;
-        let level = 1;
-
-        if (chestType === 'death' || chestType === 'cosmic') {
-            level = roll < 0.8 ? 1 : 2;
-        } else {
-            if (roll < 0.6) {
-            level = 1;
-            } else if (roll < 0.8) {
-            level = 2;
-            } else {
-            level = 1;
-            targetRarity = rarities[chestIndex + 1];
-            }
-        }
-
-        if (!pileCounts[targetRarity]) {
-            pileCounts[targetRarity] = { lv1: 0, lv2: 0 };
-        }
-
-        if (level === 1) {
-            pileCounts[targetRarity].lv1 += 1;
-        } else {
-            pileCounts[targetRarity].lv2 += 1;
-        }
+    if (chestType === 'death' || chestType === 'cosmic') {
+        pileCounts[chestType].lv1 = openCount * 0.8;
+        pileCounts[chestType].lv2 = openCount * 0.2;
+    } else {
+        pileCounts[chestType].lv1 = openCount * 0.6;
+        pileCounts[chestType].lv2 = openCount * 0.2;
+        pileCounts[rarities[chestIndex + 1]].lv1 = openCount * 0.2;
     }
 
-    let output = "";
+    let output = '';
     for (const rarity of dropRarities) {
-    let { lv1, lv2 } = pileCounts[rarity];
-    let mergedLv2 = Math.floor(lv1 / 2);
-    lv1 = lv1 % 2;
-    lv2 += mergedLv2;
-    let lv3 = Math.floor(lv2 / 2);
-    lv2 = lv2 % 2;
-    const runes = lv1 * 2 + lv2 * 5 + lv3 * 12;
+        const rawLv1 = pileCounts[rarity].lv1;
+        const rawLv2 = pileCounts[rarity].lv2;
+        const rawRuneValue = rawLv1 * 2 + rawLv2 * 5;
 
-    output += `
-        <div class="result-block">
-        <img src="runes/${rarity}.png" alt="${rarity}">
-        <div class="result-details">
-            <strong>${rarity.toUpperCase()}</strong><br>
-            - lv1 pile: ${lv1}<br>
-            - lv2 pile: ${lv2}<br>
-            - lv3 pile: ${lv3}<br>
-            → Runes: ${runes}
-        </div>
-        </div>
-    `;
+        const mergedLv2 = Math.floor(rawLv1 / 2);
+        const remainingLv1 = rawLv1 % 2;
+        const totalLv2 = rawLv2 + mergedLv2;
+
+        const mergedLv3 = Math.floor(totalLv2 / 2);
+        const remainingLv2 = totalLv2 % 2;
+
+        const mergedRuneValue =
+            remainingLv1 * 2 + remainingLv2 * 5 + mergedLv3 * 12;
+
+        output += `
+            <div class="result-block">
+                <img src="runes/${rarity}.png" alt="${rarity}">
+                <div class="result-details">
+                    <strong>${rarity.toUpperCase()}</strong><br><br>
+                    
+                    <u>Raw Drops</u><br>
+                    - avg lv1 piles: ${rawLv1.toFixed(2)}<br>
+                    - avg lv2 piles: ${rawLv2.toFixed(2)}<br>
+
+                    <u>After Merging</u><br>
+                    - lv1 piles: ${remainingLv1.toFixed(2)}<br>
+                    - lv2 piles: ${remainingLv2.toFixed(2)}<br>
+                    - lv3 piles: ${mergedLv3.toFixed(2)}<br>
+                    → Rune value (merged): ${mergedRuneValue.toFixed(2)}
+                </div>
+            </div>
+        `;
     }
+
     resultDiv.innerHTML = output;
     resultDiv.classList.remove('hidden');
     document.getElementById('container').classList.add('show-result');
-    console.log(output);
 }
 
 openChestBtn.addEventListener('click', simulateChest);
