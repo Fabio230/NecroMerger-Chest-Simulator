@@ -27,6 +27,7 @@ rarities.forEach(rarity => {
     chestContainer.classList.remove('error');
     };
     chestContainer.appendChild(btn);
+    if (rarity === "ice") btn.click();
 });
 
 [0, 1, 2, 3, 4,].forEach(i => {
@@ -39,7 +40,10 @@ rarities.forEach(rarity => {
     openCountContainer.classList.remove('error');
     };
     openCountContainer.appendChild(btn);
+    if (i === 0) btn.click();
 });
+
+simulateChest();
 
 function simulateChest() {
     clearErrors();
