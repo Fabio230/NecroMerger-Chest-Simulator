@@ -1,6 +1,7 @@
-const rarities = ['ice', 'poison', 'blood', 'moon', 'death', 'cosmic'];
+const rarities = ['ice', 'poison', 'blood', 'moon', 'death', 'cosmic', 'galactic'];
 let selectedChest = null;
 let extraCount = 0;
+let lastSelectedTab = 'merged'; // tracks the last selected tab
 
 const chestContainer = document.getElementById('chestTypeButtons');
 const openCountContainer = document.getElementById('openCountButtons');
@@ -21,29 +22,25 @@ rarities.forEach(rarity => {
     const btn = document.createElement('button');
     btn.innerHTML = `<img src="chests/${rarity}.png" alt="${rarity}">`;
     btn.onclick = () => {
-    selectedChest = rarity;
-    [...chestContainer.children].forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    chestContainer.classList.remove('error');
+        selectedChest = rarity;
+        [...chestContainer.children].forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        chestContainer.classList.remove('error');
     };
     chestContainer.appendChild(btn);
-    if (rarity === "ice") btn.click();
 });
 
-[0, 1, 2, 3, 4,].forEach(i => {
+[0, 1, 2, 3, 4].forEach(i => {
     const btn = document.createElement('button');
     btn.textContent = `+${i}`;
     btn.onclick = () => {
-    extraCount = i;
-    [...openCountContainer.children].forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    openCountContainer.classList.remove('error');
+        extraCount = i;
+        [...openCountContainer.children].forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        openCountContainer.classList.remove('error');
     };
     openCountContainer.appendChild(btn);
-    if (i === 0) btn.click();
 });
-
-simulateChest();
 
 function simulateChest() {
     clearErrors();
@@ -69,7 +66,7 @@ function simulateChest() {
     if (isNaN(chestAmount) || chestAmount < 1) chestAmount = 1;
 
     const openCount = (4 + extraCount) * chestAmount;
-        const pileCounts = {};
+    const pileCounts = {};
 
     const chestIndex = rarities.indexOf(chestType);
     const dropRarities = (chestType === 'death' || chestType === 'cosmic')
@@ -89,10 +86,12 @@ function simulateChest() {
         pileCounts[rarities[chestIndex + 1]].lv1 = openCount * 0.2;
     }
 
-    let output = '';
+    resultDiv.innerHTML = '';
+
     for (const rarity of dropRarities) {
         const rawLv1 = pileCounts[rarity].lv1;
         const rawLv2 = pileCounts[rarity].lv2;
+        // not useful
         const rawRuneValue = rawLv1 * 2 + rawLv2 * 5;
 
         const mergedLv2 = Math.floor(rawLv1 / 2);
@@ -105,29 +104,70 @@ function simulateChest() {
         const mergedRuneValue =
             remainingLv1 * 2 + remainingLv2 * 5 + mergedLv3 * 12;
 
-        output += `
-            <div class="result-block">
-                <img src="runes/${rarity}.png" alt="${rarity}">
-                <div class="result-details">
-                    <strong>${rarity.toUpperCase()}</strong><br><br>
-                    
-                    <u>Raw Drops</u><br>
-                    - avg lv1 piles: ${rawLv1.toFixed(2)}<br>
-                    - avg lv2 piles: ${rawLv2.toFixed(2)}<br>
+        const template = document.getElementById('result-template');
+        const clone = template.content.cloneNode(true);
 
-                    <u>After Merging</u><br>
-                    - lv1 piles: ${remainingLv1.toFixed(2)}<br>
-                    - lv2 piles: ${remainingLv2.toFixed(2)}<br>
-                    - lv3 piles: ${mergedLv3.toFixed(2)}<br>
-                    → Rune value (merged): ${mergedRuneValue.toFixed(2)}
-                </div>
-            </div>
-        `;
+        const mergedId = `${rarity}-merged`;
+        const rawId = `${rarity}-raw`;
+
+        const navButtons = clone.querySelectorAll('button[data-bs-toggle="pill"]');
+        const tabContents = clone.querySelectorAll('.tab-pane');
+
+        navButtons[0].dataset.bsTarget = `#${mergedId}`;
+        navButtons[1].dataset.bsTarget = `#${rawId}`;
+        tabContents[0].id = mergedId;
+        tabContents[1].id = rawId;
+
+        // apply previously selected tab
+        const isMerged = lastSelectedTab === 'merged';
+        navButtons[0].classList.toggle('active', isMerged);
+        navButtons[1].classList.toggle('active', !isMerged);
+        tabContents[0].classList.toggle('show', isMerged);
+        tabContents[0].classList.toggle('active', isMerged);
+        tabContents[1].classList.toggle('show', !isMerged);
+        tabContents[1].classList.toggle('active', !isMerged);
+
+        clone.querySelector('.result-img').src = `runes/${rarity}.png`;
+        clone.querySelector('.result-img').alt = rarity;
+
+        clone.querySelector('.raw-lv1').textContent = rawLv1.toFixed(2);
+        clone.querySelector('.raw-lv2').textContent = rawLv2.toFixed(2);
+
+        clone.querySelector('.after-lv1').textContent = remainingLv1.toFixed(2);
+        clone.querySelector('.after-lv2').textContent = remainingLv2.toFixed(2);
+        clone.querySelector('.after-lv3').textContent = mergedLv3.toFixed(2);
+        clone.querySelector('.rune-value').textContent = mergedRuneValue.toFixed(2);
+
+        clone.querySelectorAll('.rarity-title').forEach(el => {
+            el.textContent = rarity.toUpperCase();
+        });
+
+        resultDiv.appendChild(clone);
     }
 
-    resultDiv.innerHTML = output;
     resultDiv.classList.remove('hidden');
     document.getElementById('container').classList.add('show-result');
 }
 
 openChestBtn.addEventListener('click', simulateChest);
+
+// sync tabs across all result blocks and track selection
+document.addEventListener('click', (e) => {
+    if (!e.target.matches('button[data-bs-toggle="pill"]')) return;
+
+    const tabLabel = e.target.textContent.trim().toLowerCase();
+    const isMerged = tabLabel === 'merged';
+    lastSelectedTab = isMerged ? 'merged' : 'raw';
+
+    document.querySelectorAll('.result-block').forEach(block => {
+        const navButtons = block.querySelectorAll('button[data-bs-toggle="pill"]');
+        const tabContents = block.querySelectorAll('.tab-pane');
+
+        navButtons[0].classList.toggle('active', isMerged);
+        navButtons[1].classList.toggle('active', !isMerged);
+        tabContents[0].classList.toggle('show', isMerged);
+        tabContents[0].classList.toggle('active', isMerged);
+        tabContents[1].classList.toggle('show', !isMerged);
+        tabContents[1].classList.toggle('active', !isMerged);
+    });
+});
