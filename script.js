@@ -1,7 +1,9 @@
-const rarities = ['ice', 'poison', 'blood', 'moon', 'death', 'cosmic', 'galactic'];
+const rarities = ['Ice', 'Poison', 'Blood', 'Moon', 'Death', 'Cosmic', 'Galactic'];
 let selectedChest = null;
 let extraCount = 0;
 let lastSelectedTab = 'merged'; // tracks the last selected tab
+
+selectedChest = 'Ice';
 
 const chestContainer = document.getElementById('chestTypeButtons');
 const openCountContainer = document.getElementById('openCountButtons');
@@ -26,6 +28,7 @@ rarities.forEach(rarity => {
         [...chestContainer.children].forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         chestContainer.classList.remove('error');
+        openChest();
     };
     chestContainer.appendChild(btn);
 });
@@ -38,11 +41,12 @@ rarities.forEach(rarity => {
         [...openCountContainer.children].forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         openCountContainer.classList.remove('error');
+        openChest();
     };
     openCountContainer.appendChild(btn);
 });
 
-function simulateChest() {
+function openChest() {
     clearErrors();
     let hasError = false;
 
@@ -149,8 +153,6 @@ function simulateChest() {
     document.getElementById('container').classList.add('show-result');
 }
 
-openChestBtn.addEventListener('click', simulateChest);
-
 // sync tabs across all result blocks and track selection
 document.addEventListener('click', (e) => {
     if (!e.target.matches('button[data-bs-toggle="pill"]')) return;
@@ -171,3 +173,5 @@ document.addEventListener('click', (e) => {
         tabContents[1].classList.toggle('active', !isMerged);
     });
 });
+
+openChest()

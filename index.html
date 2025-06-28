@@ -7,44 +7,52 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
 </head>
-<body>
+<body class="bg-dark text-light">
+  <div class="container py-4">
+    <h1 class="text-center mb-4">NecroMerger Rune Chest Tool</h1>
 
-  <h1>NecroMerger Rune Chest Tool</h1>
+    <div id="container">
+      <div id="inputWrapper" class="d-flex flex-column gap-4">
 
-  <div id="container" class="centered">
-    <div id="inputWrapper">
-      <div id="chestCountInput">
-        <h3>How many chests to open?</h3>
-        <input type="number" id="chestAmount" min="1" max="9999" value="1">
-      </div>      
+        <!-- Chest count input -->
+        <div id="chestCountInput" class="text-center">
+          <h3 class="h5">How many chests to open?</h3>
+          <input type="number" id="chestAmount" class="form-control mx-auto mt-2" style="max-width: 200px;" min="1" max="9999" value="1">
+        </div>
 
-      <div id="chestButtons">
-        <h3>Choose chest type:</h3>
-        <div class="button-row" id="chestTypeButtons"></div>
+        <!-- Chest type buttons -->
+        <div id="chestButtons">
+          <h3 class="h5 text-center">Choose chest type:</h3>
+          <div class="button-row d-flex flex-wrap justify-content-center gap-2 mt-2" id="chestTypeButtons"></div>
+        </div>
+
+        <!-- Extra open count buttons -->
+        <div id="countButtons">
+          <h3 class="h5 text-center">Choose extra open count:</h3>
+          <div class="button-row d-flex flex-wrap justify-content-center gap-2 mt-2" id="openCountButtons"></div>
+        </div>
+
+        <!-- Result -->
+        <div id="result" class="hidden d-flex justify-content-center">
+          <div id="resultContent" class="d-flex justify-content-center"></div>
+        </div>
       </div>
-
-      <div id="countButtons">
-        <h3>Choose extra open count:</h3>
-        <div class="button-row" id="openCountButtons"></div>
-      </div>
-
-      <button class="confirm-button" id="openChestBtn">Open Chest</button>
-      <div id="result" class="hidden"></div>  
     </div>
   </div>
 
+  <!-- Result template remains the same -->
   <template id="result-template">
-    <div class="result-block">
-      <img class="result-img" src="" alt="">
-      <ul class="nav nav-pills mb-2">
-        <li class="nav-item" role="presentation">
+      <div class="result-block p-3 m-1">
+          <img class="result-img mb-2">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
           <button class="nav-link active" data-bs-toggle="pill" type="button">Merged</button>
         </li>
-        <li class="nav-item" role="presentation">
+        <li class="nav-item">
           <button class="nav-link" data-bs-toggle="pill" type="button">Raw</button>
         </li>
       </ul>
-  
+
       <div class="tab-content">
         <div class="tab-pane fade show active merged-tab">
           <strong class="rarity-title"></strong><br>
@@ -60,7 +68,7 @@
         </div>
       </div>
     </div>
-  </template>  
+  </template>
 
   <script src="script.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
