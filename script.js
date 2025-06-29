@@ -11,6 +11,28 @@ const openChestBtn = document.getElementById('openChestBtn');
 const resultDiv = document.getElementById('result');
 const chestAmountInput = document.getElementById('chestAmount');
 
+function increment() {
+    chestAmountInput.value = parseInt(chestAmountInput.value) + 1;
+    openChest();
+}
+
+function decrement() {
+    chestAmountInput.value = Math.max(1, parseInt(chestAmountInput.value) - 1);
+    openChest();
+}
+
+function resetCounter() {
+    chestAmountInput.value = 1;
+    openChest();
+}
+
+chestAmountInput.addEventListener('input', () => {
+    if (chestAmountInput.value < 1) {
+        chestAmountInput.value = 1;
+    }
+    openChest();
+});
+
 function clearErrors() {
     chestContainer.classList.remove('error');
     openCountContainer.classList.remove('error');
