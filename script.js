@@ -1,4 +1,4 @@
-const rarities = ['Ice', 'Poison', 'Blood', 'Moon', 'Death', 'Cosmic', 'Galactic'];
+const rarities = ['Ice', 'Poison', 'Blood', 'Moon', 'Death', 'Cosmic', 'Astro', 'Energy'];
 let selectedChest = null;
 let extraCount = 0;
 let lastSelectedTab = 'merged'; // tracks the last selected tab
@@ -58,7 +58,6 @@ function openChest() {
         markError(openCountContainer);
         hasError = true;
     }
-
     if (hasError) {
         resultDiv.innerHTML = '';
         return;
@@ -73,15 +72,14 @@ function openChest() {
     const pileCounts = {};
 
     const chestIndex = rarities.indexOf(chestType);
-    const dropRarities = (chestType === 'death' || chestType === 'cosmic')
+    const dropRarities = (chestType === 'Death' || chestType === 'Cosmic' || chestType === 'Energy')
         ? [chestType]
         : [chestType, rarities[chestIndex + 1]];
 
     for (const rarity of dropRarities) {
         pileCounts[rarity] = { lv1: 0, lv2: 0 };
     }
-
-    if (chestType === 'death' || chestType === 'cosmic') {
+    if (chestType === 'Death' || chestType === 'Cosmic' || chestType === 'Energy') {
         pileCounts[chestType].lv1 = openCount * 0.8;
         pileCounts[chestType].lv2 = openCount * 0.2;
     } else {
@@ -95,8 +93,6 @@ function openChest() {
     for (const rarity of dropRarities) {
         const rawLv1 = pileCounts[rarity].lv1;
         const rawLv2 = pileCounts[rarity].lv2;
-        // not useful
-        const rawRuneValue = rawLv1 * 2 + rawLv2 * 5;
 
         const mergedLv2 = Math.floor(rawLv1 / 2);
         const remainingLv1 = rawLv1 % 2;
