@@ -32,9 +32,19 @@
           <div class="button-row d-flex flex-wrap justify-content-center gap-2 mt-2" id="openCountButtons"></div>
         </div>
 
+
+        <ul class="nav nav-pills justify-content-center">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="pill" type="button">Merged</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" type="button">Raw</button>
+          </li>
+        </ul>
+
         <!-- Result -->
-        <div id="result" class="hidden d-flex justify-content-center">
-          <div id="resultContent" class="d-flex justify-content-center"></div>
+        <div id="result" class="d-flex justify-content-center">
+          <div id="resultContent"></div>
         </div>
       </div>
     </div>
@@ -42,29 +52,20 @@
 
   <!-- Result template remains the same -->
   <template id="result-template">
-      <div class="result-block p-3 m-1">
-          <img class="result-img mb-2">
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <button class="nav-link active" data-bs-toggle="pill" type="button">Merged</button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" data-bs-toggle="pill" type="button">Raw</button>
-        </li>
-      </ul>
-
+    <div class="result-block p-3 m-1">
+      <img class="result-img mb-2 ">
       <div class="tab-content">
-        <div class="tab-pane fade show active merged-tab">
+        <div class="tab-pane show active">
           <strong class="rarity-title"></strong><br>
-          - lv1: <span class="after-lv1"></span><br>
-          - lv2: <span class="after-lv2"></span><br>
-          - lv3: <span class="after-lv3"></span><br>
-          → Rune value: <span class="rune-value"></span>
+          Lv1: <span class="after-lv1"></span><br>
+          Lv2: <span class="after-lv2"></span><br>
+          Lv3: <span class="after-lv3"></span><br>
+          Total value: <span class="rune-value"></span>
         </div>
-        <div class="tab-pane fade raw-tab">
+        <div class="tab-pane">
           <strong class="rarity-title"></strong><br>
-          - avg lv1: <span class="raw-lv1"></span><br>
-          - avg lv2: <span class="raw-lv2"></span>
+          Lv1: <span class="raw-lv1"></span><br>
+          Lv2: <span class="raw-lv2"></span>
         </div>
       </div>
     </div>

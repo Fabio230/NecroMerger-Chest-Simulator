@@ -114,18 +114,13 @@ function openChest() {
         const mergedId = `${rarity}-merged`;
         const rawId = `${rarity}-raw`;
 
-        const navButtons = clone.querySelectorAll('button[data-bs-toggle="pill"]');
         const tabContents = clone.querySelectorAll('.tab-pane');
 
-        navButtons[0].dataset.bsTarget = `#${mergedId}`;
-        navButtons[1].dataset.bsTarget = `#${rawId}`;
         tabContents[0].id = mergedId;
         tabContents[1].id = rawId;
 
         // apply previously selected tab
         const isMerged = lastSelectedTab === 'merged';
-        navButtons[0].classList.toggle('active', isMerged);
-        navButtons[1].classList.toggle('active', !isMerged);
         tabContents[0].classList.toggle('show', isMerged);
         tabContents[0].classList.toggle('active', isMerged);
         tabContents[1].classList.toggle('show', !isMerged);
@@ -162,11 +157,8 @@ document.addEventListener('click', (e) => {
     lastSelectedTab = isMerged ? 'merged' : 'raw';
 
     document.querySelectorAll('.result-block').forEach(block => {
-        const navButtons = block.querySelectorAll('button[data-bs-toggle="pill"]');
         const tabContents = block.querySelectorAll('.tab-pane');
 
-        navButtons[0].classList.toggle('active', isMerged);
-        navButtons[1].classList.toggle('active', !isMerged);
         tabContents[0].classList.toggle('show', isMerged);
         tabContents[0].classList.toggle('active', isMerged);
         tabContents[1].classList.toggle('show', !isMerged);
